@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# headlong-email-bridge — Resend inbound-webhook email bridge for a Headlong
+# identity.
+#
+# Usage:
+#   headlong-email-bridge [ROOT] [--verbose]
+#
+# ROOT defaults to the headlong repo (parent of this script's directory).
+# Requires uv. Configuration via env: RESEND_API_KEY, RESEND_WEBHOOK_SECRET,
+# AXON_EMAIL_ADDRESS, HEADLONG_EMAIL_ADMIN, HEADLONG_EMAIL_IDENTITY (defaults
+# to the identity the `default` link points at), HEADLONG_WEB_URL,
+# HEADLONG_EMAIL_LISTEN_HOST/PORT/WEBHOOK_PATH. See email/README.md.
+
+# Resolve through symlinks (install.sh --symlinks puts this on PATH), then
+# fall back to the checkout recorded by install.sh / headlong-init.
+ROOT_DIR="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.." && pwd)"
+if [[ ! -d "$ROOT_DIR/email" ]]; then
+    _home="${HEADLONG_HOME:-${SHELLM_HOME:-$HOME/.headlong}}"
+    _rec=$(cat "$_home/app_dir" 2>/dev/null || true)
+    if [[ -n "$_rec" && -d "$_rec/email" ]]; then ROOT_DIR="$_rec"
+    elif [[ -d "$_home/app/email" ]]; then ROOT_DIR="$_home/app"
+    else echo "headlong-email-bridge: can't find the headlong checkout (email/ missing); set HEADLONG_HOME or run from a checkout" >&2; exit 1
+    fi
+fi
+
+# Headlong's env files, loaded the way tools/persona and bin/llm load them:
+# what is already exported wins, so a root-owned /etc/shellm/email.env (see
+# email/README.md) stays authoritative where it exists. Without this the
+# bridge is the only entry point that cannot see the checkout's .env, and a
+# key that lives there reads as absent. Loading sources the checkout's .env,
+# so this launcher is for local dev, not for the key-holding service user.
+_load_env() {
+    local envfile="$1"
+    [[ -f "$envfile" ]] || return 1
+    local key val
+    while IFS= read -r key; do
+        [[ -n "$key" ]] || continue
+        [[ -n "${!key+x}" ]] && continue
+        # shellcheck disable=SC1090  # sourcing the user's own env file
+        val=$(set -a; . "$envfile" >/dev/null 2>&1; printf '%s' "${!key}") || { printf '%s: warning: could not read %s; ignoring it\n' "${0##*/}" "$envfile" >&2; return 0; }
+        export "$key=$val"
+    done < <(sed -n 's/^[[:space:]]*\(export[[:space:]]\{1,\}\)\{0,1\}\([A-Za-z_][A-Za-z0-9_]*\)[[:space:]]*=.*/\2/p' "$envfile")
+    return 0
+}
+_load_env "$ROOT_DIR/.env" || true
+_load_env "${HEADLONG_HOME:-${SHELLM_HOME:-$HOME/.headlong}}/.env" || true
+
+command -v uv >/dev/null 2>&1 || { echo "headlong-email-bridge: uv is required (https://docs.astral.sh/uv/)" >&2; exit 1; }
+
+# First arg is ROOT if it isn't a flag; all remaining args pass through.
+if [[ $# -gt 0 && "${1:0:1}" != "-" ]]; then
+    serve_root="$1"
+    shift
+else
+    serve_root="$ROOT_DIR"
+fi
+
+exec uv run --project "$ROOT_DIR/email" headlong-email-bridge "$serve_root" "$@"

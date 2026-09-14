@@ -185,7 +185,7 @@ Everything you run *around* the mind lives in `tools/`:
 | **headlong-init** | One-time bootstrap: interview, first identity, first thoughts |
 | **shellm-explore** | Visualizes run trees and writes LLM-powered reports on what happened and why |
 | **headlong-web** | The dashboard, where you watch a mind think in the browser |
-| **headlong-slack-bridge** / **headlong-telegram-bridge** | Slack and Telegram connectors into the same inner experience |
+| **headlong-slack-bridge** / **headlong-telegram-bridge** / **headlong-email-bridge** | Slack, Telegram, and email connectors into the same inner experience |
 | **headlong-killall** | Panic button that stops every Headlong-related process |
 | **pr-committee** | Multi-model pull request review, used on this repo |
 
