@@ -1,8 +1,8 @@
 {
   "display_information": {
-    "name": "Audel",
-    "description": "Audel, Laude's Headlong agent \u2014 DM me or @mention me in a channel",
-    "long_description": "Audel is an experimental AI agent built on Headlong. It runs continuously on its own machine, and this app connects it to Slack. DM it or @mention it in a channel and your message goes into its running mind. It can use its shell and tools to actually do things, and it replies in the same conversation when it's done.\n\nAudel is under active development. Expect bugs, slow or missing replies, restarts, and the occasional strange decision.\n\nTreat anything you post to Audel as potentially public. Every conversation with every person feeds one shared memory, so what you tell it may surface in its replies to other people. Its full memory is also viewable by everyone at Laude on its dashboard. Don't share credentials, secrets, or anything you wouldn't post in a public channel."
+    "name": "aeon",
+    "description": "aeon, Mirror's long-running agent — DM me or @mention me in a channel",
+    "long_description": "aeon is an experimental AI agent built on Headlong. It runs continuously on its own machine, and this app connects it to Slack. DM it or @mention it in a channel and your message goes into its running mind. It can use its shell and tools to actually do things, and it replies in the same conversation when it's done.\n\naeon is under active development. Expect bugs, slow or missing replies, restarts, and the occasional strange decision.\n\nTreat anything you post to aeon as potentially public. Every conversation with every person feeds one shared memory, so what you tell it may surface in its replies to other people. Its full memory is also viewable by everyone at Mirror on its dashboard. Don't share credentials, secrets, or anything you wouldn't post in a public channel."
   },
   "features": {
     "app_home": {
@@ -10,7 +10,7 @@
       "messages_tab_read_only_enabled": false
     },
     "bot_user": {
-      "display_name": "audel",
+      "display_name": "aeon",
       "always_online": true
     }
   },
