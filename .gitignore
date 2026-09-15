@@ -33,3 +33,6 @@ handoff/
 # stray backup files
 *.bak
 *.bak.*
+
+# local scratch space (can contain multi-GB logs — never commit)
+scratch/
